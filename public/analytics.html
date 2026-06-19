@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analytics Dashboard | TradeUNO</title>
+  <link rel="stylesheet" href="/analytics.css">
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <!-- Toast Notifications -->
+  <div class="toast-wrap" id="toastWidget">
+    <i data-lucide="check-circle" class="toast-success-icon"></i>
+    <span id="toastText">Action completed successfully!</span>
+  </div>
+
+  <!-- 1. Global Alert Banner -->
+  <div class="trial-banner" id="trialAlert">
+    <div class="trial-banner-left">
+      <i data-lucide="alert-circle" size="16"></i>
+      <span>14 days left in your free trial</span>
+    </div>
+    <div class="trial-banner-right">
+      <button class="btn-pricing" onclick="triggerPricing()">See pricing</button>
+      <button class="banner-close" aria-label="Dismiss Banner" onclick="dismissBanner()">
+        <i data-lucide="x" size="14"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Container -->
+  <div class="app-container">
+    
+    <!-- 2. Left Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-top">
+        <div class="sidebar-logo">
+          <i data-lucide="zap" style="fill: var(--accent); stroke: var(--accent);"></i>
+          <span>tradeUNO</span>
+          <span class="sidebar-logo-accent"></span>
+        </div>
+        
+        <button class="btn-add-site" onclick="openAddSiteModal()">
+          <i data-lucide="plus" size="16"></i>
+          <span>Add your first website</span>
+        </button>
+        
+        <nav class="sidebar-menu">
+          <div>
+            <div class="menu-section-title">Analysis</div>
+            <ul class="menu-list">
+              <li class="menu-item"><a href="/dashboard.html"><i data-lucide="layout-dashboard" size="16"></i><span>Dashboard</span></a></li>
+              <li class="menu-item active"><a href="#"><i data-lucide="bar-chart-3" size="16"></i><span>Analytics</span></a></li>
+              <li class="menu-item"><a href="#"><i data-lucide="search" size="16"></i><span>SEO Tools</span></a></li>
+            </ul>
+          </div>
+          
+          <div>
+            <div class="menu-section-title">Insights</div>
+            <ul class="menu-list">
+              <li class="menu-item"><a href="#"><i data-lucide="users" size="16"></i><span>Leads</span></a></li>
+            </ul>
+          </div>
+          
+          <div>
+            <div class="menu-section-title">Settings</div>
+            <ul class="menu-list">
+              <li class="menu-item"><a href="#"><i data-lucide="file-text" size="16"></i><span>Reports</span></a></li>
+              <li class="menu-item"><a href="#"><i data-lucide="globe" size="16"></i><span>My Websites</span></a></li>
+              <li class="menu-item"><a href="#"><i data-lucide="link" size="16"></i><span>Connections</span></a></li>
+              <li class="menu-item"><a href="#"><i data-lucide="settings" size="16"></i><span>Settings</span></a></li>
+            </ul>
+          </div>
+        </nav>
+      </div>
+      
+      <div class="sidebar-bottom">
+        <div class="upgrade-card">
+          <h4>Upgrade your plan</h4>
+          <p>Unlock custom dashboards, advanced leads tracking, and unlimited sites.</p>
+          <button class="btn-see-plans" onclick="triggerPricing()">See plans</button>
+        </div>
+        
+        <div class="user-profile">
+          <div class="profile-avatar">TU</div>
+          <div class="profile-details">
+            <span class="profile-name">TradeUNO</span>
+            <span class="profile-plan">Free trial</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Viewport -->
+    <main class="main-viewport">
+      
+      <!-- Header Section -->
+      <header class="header-row">
+        <div class="header-titles">
+          <h1>Analytics</h1>
+          <p>Website performance and insights</p>
+        </div>
+        
+        <div class="header-tools">
+          <div class="search-box">
+            <i data-lucide="search" size="16" class="search-icon"></i>
+            <input type="text" class="search-input" id="searchField" placeholder="Search analytics..." oninput="handleSearch()">
+          </div>
+
+          <!-- Theme Switcher -->
+          <div class="theme-switch-container">
+            <label class="theme-switch" aria-label="Toggle Theme">
+              <input type="checkbox" id="themeToggler" onchange="toggleTheme()">
+              <span class="theme-slider"></span>
+            </label>
+          </div>
+          
+          <button class="icon-btn" aria-label="Notifications" onclick="triggerNotification()">
+            <i data-lucide="bell" size="18"></i>
+          </button>
+          
+          <img class="avatar-img" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80" alt="User Avatar">
+        </div>
+      </header>
+
+      <!-- Global Toolbar Controls -->
+      <section class="control-toolbar">
+        <!-- Segmented Tab Group -->
+        <div class="tabs-group">
+          <button class="tab-pill active" id="tab-ga" onclick="switchSourceTab('ga')">Google Analytics</button>
+          <button class="tab-pill" id="tab-gsc" onclick="switchSourceTab('gsc')">Search Console</button>
+          <button class="tab-pill" id="tab-seo" onclick="switchSourceTab('seo')">SEO Benchmark</button>
+        </div>
+
+        <div class="control-row" style="display:flex; gap:8px;">
+          <select class="search-input" style="padding-left:12px; width:auto; font-weight:600;" id="timeSelect" onchange="changeTimePeriod()">
+            <option value="this-month">This Month</option>
+            <option value="last-month">Last Month</option>
+            <option value="all-time">All Time</option>
+          </select>
+          <button class="icon-btn" id="refreshBtn" aria-label="Refresh Data" onclick="triggerRefresh()">
+            <i data-lucide="refresh-cw" size="16"></i>
+          </button>
+        </div>
+      </section>
+
+      <!-- 8 KPI Cards Grid -->
+      <section class="kpi-grid" id="kpiGrid">
+        <!-- Card 1 -->
+        <div class="kpi-card" id="kpi-users">
+          <div class="kpi-card-header">
+            <span class="kpi-card-title">Total Users</span>
+            <i data-lucide="users" size="14" class="kpi-card-icon"></i>
+          </div>
+          <span class="kpi-card-value">-</span>
+          <span class="kpi-card-caption">Awaiting sync</span>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="kpi-card" id="kpi-new-users">
+          <div class="kpi-card-header">
+            <span class="kpi-card-title">New Users</span>
+            <i data-lucide="user-plus" size="14" class="kpi-card-icon"></i>
+          </div>
+          <span class="kpi-card-value">-</span>
+          <span class="kpi-card-caption">Awaiting sync</span>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="kpi-card" id="kpi-sessions">
+          <div class="kpi-card-header">
+            <span class="kpi-card-title">Sessions</span>
+            <i data-lucide="mouse-pointer-click" size="14" class="kpi-card-icon"></i>
+          </div>
+          <span class="kpi-card-value">-</span>
+          <span class="kpi-card-caption">Awaiting sync</span>
+        </div>
+
+        <!-- Card 4 -->
+        <div class="kpi-card" id="kpi-views">
+          <div class="kpi-card-header">
+            <span class="kpi-card-title">Pageviews</span>
+            <i data-lucide="eye" size="14" class="kpi-card-icon"></i>
+          </div>
+          <span class="kpi-card-value">-</span>
+          <span class="kpi-card-caption">Awaiting sync</span>
+        </div>
+
+        <!-- Card 5 -->
+        <div class="kpi-card" id="kpi-bounce">
+          <div class="kpi-card-header">
+            <span class="kpi-card-title">Bounce Rate</span>
+            <i data-lucide="activity" size="14" class="kpi-card-icon"></i>
+          </div>
+          <span class="kpi-card-value">-</span>
+          <span class="kpi-card-caption">Lower is better</span>
+        </div>
+
+        <!-- Card 6 -->
+        <div class="kpi-card" id="kpi-duration">
+          <div class="kpi-card-header">
+            <span class="kpi-card-title">Avg. Duration</span>
+            <i data-lucide="clock" size="14" class="kpi-card-icon"></i>
+          </div>
+          <span class="kpi-card-value">-</span>
+          <span class="kpi-card-caption">Awaiting sync</span>
+        </div>
+
+        <!-- Card 7 -->
+        <div class="kpi-card" id="kpi-engagement">
+          <div class="kpi-card-header">
+            <span class="kpi-card-title">Engagement Rate</span>
+            <i data-lucide="gauge" size="14" class="kpi-card-icon"></i>
+          </div>
+          <span class="kpi-card-value">-</span>
+          <span class="kpi-card-caption">Awaiting sync</span>
+        </div>
+
+        <!-- Card 8 -->
+        <div class="kpi-card" id="kpi-pages-session">
+          <div class="kpi-card-header">
+            <span class="kpi-card-title">Pages/Session</span>
+            <i data-lucide="layers" size="14" class="kpi-card-icon"></i>
+          </div>
+          <span class="kpi-card-value">-</span>
+          <span class="kpi-card-caption">Awaiting sync</span>
+        </div>
+      </section>
+
+      <!-- Visualizations Layer -->
+      <section class="viz-grid">
+        <!-- 65% Chart Container -->
+        <div class="viz-card">
+          <span class="viz-card-title">Users & Sessions Over Time</span>
+          
+          <div class="empty-chart-wrapper" id="chartArea">
+            <!-- Empty state coordinates background using absolute layout -->
+            <svg class="empty-chart-bg" viewBox="0 0 100 50">
+              <line x1="0" y1="10" x2="100" y2="10" stroke="var(--border-color)" stroke-dasharray="1 3" stroke-width="0.5"/>
+              <line x1="0" y1="20" x2="100" y2="20" stroke="var(--border-color)" stroke-dasharray="1 3" stroke-width="0.5"/>
+              <line x1="0" y1="30" x2="100" y2="30" stroke="var(--border-color)" stroke-dasharray="1 3" stroke-width="0.5"/>
+              <line x1="0" y1="40" x2="100" y2="40" stroke="var(--border-color)" stroke-dasharray="1 3" stroke-width="0.5"/>
+              <line x1="10" y1="0" x2="10" y2="50" stroke="var(--border-color)" stroke-dasharray="1 3" stroke-width="0.5"/>
+              <line x1="30" y1="0" x2="30" y2="50" stroke="var(--border-color)" stroke-dasharray="1 3" stroke-width="0.5"/>
+              <line x1="50" y1="0" x2="50" y2="50" stroke="var(--border-color)" stroke-dasharray="1 3" stroke-width="0.5"/>
+              <line x1="70" y1="0" x2="70" y2="50" stroke="var(--border-color)" stroke-dasharray="1 3" stroke-width="0.5"/>
+              <line x1="90" y1="0" x2="90" y2="50" stroke="var(--border-color)" stroke-dasharray="1 3" stroke-width="0.5"/>
+            </svg>
+            
+            <div class="watermark-overlay" id="chartWatermark">
+              <i data-lucide="line-chart" size="28" style="color: var(--text-muted);"></i>
+              <span class="watermark-text">Awaiting data sync</span>
+              <span class="watermark-sub">Connect your website account to begin tracking users.</span>
+            </div>
+            
+            <canvas id="analyticsChart" style="display:none; width:100%; height:100%;"></canvas>
+          </div>
+        </div>
+
+        <!-- 35% Top Pages Column -->
+        <div class="viz-card">
+          <span class="viz-card-title">Top Pages</span>
+          
+          <div class="empty-pages-list" id="pagesArea">
+            <div class="pages-icon-wrap">
+              <i data-lucide="file-text" size="20"></i>
+            </div>
+            <p style="font-size:13px; font-weight:600; color:var(--text-secondary);">No synced pages</p>
+            <p style="font-size:11.5px; color:var(--text-muted); line-height:1.4;">Configure details to begin analyzing traffic patterns.</p>
+            <button class="btn-connect" onclick="openAddSiteModal()">Connect Pages</button>
+          </div>
+          
+          <!-- Populated Top Pages container -->
+          <div class="pages-list-container" id="pagesList" style="display:none;">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+      </section>
+      
+    </main>
+
+  </div>
+
+  <!-- Modal Component: Add site -->
+  <div class="modal-overlay" id="addSiteModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title">Sync Website Account</h3>
+        <button class="modal-close" aria-label="Close Modal" onclick="closeAddSiteModal()">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <form id="addSiteForm" onsubmit="handleSyncSubmit(event)">
+        <div class="form-group">
+          <label for="domainUrl">Website Domain URL</label>
+          <input type="url" id="domainUrl" class="form-control" placeholder="https://tradeuno.com" required>
+        </div>
+        <div class="form-group">
+          <label for="integrationSource">Analytics Source</label>
+          <select id="integrationSource" class="form-control" style="cursor:pointer;">
+            <option value="ga4">Google Analytics (GA4)</option>
+            <option value="gsc">Google Search Console</option>
+          </select>
+        </div>
+        <button type="submit" class="btn-submit">
+          <i data-lucide="refresh-cw" size="16"></i>
+          <span>Sync & Load Account</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Analytics Script -->
+  <script src="/analytics.js"></script>
+</body>
+</html>

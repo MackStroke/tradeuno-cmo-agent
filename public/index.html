@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TradeUno CMO Agent | AI-Powered Marketing Dashboard</title>
+  <meta name="description" content="AI-powered CMO dashboard for TradeUno Fabrics - manage marketing, social media, ads, leads, and team performance.">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ═══ LOGIN PAGE ═══ -->
+<div id="loginPage" class="login-page">
+  <div class="login-box">
+    <div class="brand-badge">🤖 AI-Powered</div>
+    <h1>TradeUno CMO</h1>
+    <p class="subtitle">AI Marketing Command Center</p>
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="loginEmail">Email</label>
+        <input type="email" id="loginEmail" placeholder="admin@tradeuno.com" required>
+      </div>
+      <div class="form-group">
+        <label for="loginPass">Password</label>
+        <input type="password" id="loginPass" placeholder="••••••••" required>
+      </div>
+      <button type="submit" class="btn btn-primary btn-full">Sign In →</button>
+      <p class="login-error" id="loginError"></p>
+    </form>
+    <p style="margin-top:20px; font-size:11px; color:var(--text-muted); text-align:center;">
+      Admin: admin@tradeuno.com / admin123<br>Team: priya@tradeuno.com / team123
+    </p>
+  </div>
+</div>
+
+<!-- ═══ APP LAYOUT ═══ -->
+<div id="appLayout" class="app-layout" style="display:none;">
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h2>TradeUno CMO</h2>
+      <span>AI Agent Dashboard</span>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">Overview</div>
+      <div class="nav-item active" data-page="dashboard"><span class="icon">📊</span> Dashboard</div>
+      
+      <div class="nav-section">Team</div>
+      <div class="nav-item" data-page="tasks"><span class="icon">✅</span> Tasks & Scoring <span class="badge" id="taskBadge"></span></div>
+      
+      <div class="nav-section">Content</div>
+      <div class="nav-item" data-page="content"><span class="icon">🎬</span> Content Studio</div>
+      <div class="nav-item" data-page="social"><span class="icon">📱</span> Social Media</div>
+      <div class="nav-item" data-page="blogs"><span class="icon">📝</span> Blog Engine</div>
+      <div class="nav-item" data-page="videos"><span class="icon">🎥</span> Video Lab</div>
+      
+      <div class="nav-section">Growth</div>
+      <div class="nav-item" data-page="competitors"><span class="icon">🔍</span> Competitor Intel</div>
+      <div class="nav-item" data-page="leads"><span class="icon">🎯</span> Lead Finder</div>
+      <div class="nav-item" data-page="meta"><span class="icon">📈</span> Meta Ads</div>
+      <div class="nav-item" data-page="shopify"><span class="icon">🛒</span> Shopify Pulse</div>
+      
+      <div class="nav-section">AI Intelligence</div>
+      <div class="nav-item" data-page="citation"><span class="icon">🏆</span> Citation Score</div>
+      <div class="nav-item" data-page="contentengine"><span class="icon">✍️</span> Content Engine</div>
+      <div class="nav-item" data-page="gaps"><span class="icon">🔎</span> Gap Analysis</div>
+      <div class="nav-item" data-page="prompttracker"><span class="icon">🎯</span> Prompt Tracker</div>
+      <div class="nav-item" data-page="leadsdash"><span class="icon">📊</span> Leads Dashboard</div>
+      
+      <div class="nav-section">Reports</div>
+      <div class="nav-item" data-page="reports"><span class="icon">📋</span> Daily Reports</div>
+      <div class="nav-item" data-page="ai"><span class="icon">🤖</span> AI Assistant</div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="user-avatar" id="userAvatar">A</div>
+        <div>
+          <div class="user-name" id="userName">Admin</div>
+          <div class="user-role" id="userRole">admin</div>
+        </div>
+      </div>
+      <button class="btn btn-secondary btn-sm btn-full" style="margin-top:10px;" onclick="logout()">Logout</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-content">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <button class="hamburger" id="hamburger" onclick="toggleSidebar()">☰</button>
+        <h1 id="pageTitle">Dashboard</h1>
+      </div>
+      <div class="topbar-actions">
+        <span style="font-size:12px;color:var(--text-muted);" id="dateDisplay"></span>
+      </div>
+    </div>
+
+    <div class="page-content">
+      <!-- ═══ DASHBOARD ═══ -->
+      <section id="page-dashboard" class="page-section active">
+        <div class="stats-grid" id="dashboardStats"></div>
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header"><h3>🔥 Recent Tasks</h3></div>
+            <div class="card-body"><div class="table-wrap" id="recentTasksTable"></div></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3>🎯 Quick AI Insight</h3>
+              <button class="btn btn-primary btn-sm" onclick="quickInsight()">Generate</button>
+            </div>
+            <div class="card-body" id="quickInsightBox">
+              <p style="color:var(--text-muted);font-size:13px;">Click generate for today's AI marketing brief.</p>
+            </div>
+          </div>
+        </div>
+        <!-- How It Works -->
+        <div style="margin-top:32px;">
+          <h2 style="font-size:18px; font-weight:700; margin-bottom:4px;">How It Works</h2>
+          <p style="font-size:13px; color:var(--text-secondary); margin-bottom:0;">Launch in Minutes. Let AI Deliver the Insights.</p>
+          <div class="how-it-works-grid">
+            <div class="step-card">
+              <div class="step-number">01</div>
+              <h4>Connect Your Clients</h4>
+              <p>Add a client workspace, link their GA4, Search Console, accounts. One-click OAuth setup takes under 5 minutes.</p>
+            </div>
+            <div class="step-card">
+              <div class="step-number">02</div>
+              <h4>AI Analyses Everything</h4>
+              <p>SEO gaps, AI visibility score, lead quality — all computed automatically and updated daily. No manual input required.</p>
+            </div>
+            <div class="step-card">
+              <div class="step-number">03</div>
+              <h4>Act on Clear Next Steps</h4>
+              <p>Prioritised recommendations — not just dashboards. Export a branded PDF or share the live client view. Reporting in 30 seconds.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ CITATION SCORE ═══ -->
+      <section id="page-citation" class="page-section">
+        <div class="flex-between">
+          <h2 style="font-size:16px;">🏆 AI Citation Score</h2>
+          <button class="btn btn-primary btn-sm" onclick="refreshCitationScore()">🔄 Refresh Score</button>
+        </div>
+        <div class="citation-hero" id="citationHero">
+          <div class="citation-gauge" id="citationGauge">
+            <svg width="140" height="140" viewBox="0 0 140 140">
+              <circle class="gauge-track" cx="70" cy="70" r="58"/>
+              <circle class="gauge-fill" id="citationGaugeFill" cx="70" cy="70" r="58" stroke-dasharray="0, 365"/>
+            </svg>
+            <div class="gauge-text">
+              <div class="gauge-score" id="citationScoreNum">0</div>
+              <div class="gauge-label">Citation Score</div>
+            </div>
+          </div>
+          <div style="flex:1;">
+            <h3 style="font-size:14px; margin-bottom:8px; color:var(--text-primary);">Weekly Trend</h3>
+            <div class="citation-trend" id="citationTrendChart"></div>
+            <div class="citation-trend-change" id="citationTrendChange"></div>
+          </div>
+        </div>
+
+        <div class="grid-2 mb-20">
+          <div class="card">
+            <div class="card-header"><h3>📡 Per-Platform Breakdown</h3></div>
+            <div class="card-body">
+              <div class="platform-grid" id="citationPlatformGrid"></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3>✅ Action Checklist</h3></div>
+            <div class="card-body">
+              <div id="citationTasksList" style="display:flex; flex-direction:column; gap:8px;"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ AI CONTENT ENGINE ═══ -->
+      <section id="page-contentengine" class="page-section">
+        <div class="flex-between">
+          <div>
+            <h2 style="font-size:16px;">✍️ AI Content Engine</h2>
+            <p style="font-size:12px; color:var(--text-secondary); margin-top:2px;">One keyword in. Full SEO brief out.</p>
+          </div>
+        </div>
+        <div class="card mb-20">
+          <div class="card-body">
+            <div style="display:flex; gap:12px; align-items:flex-end;">
+              <div class="form-group" style="flex:1; margin-bottom:0;">
+                <label for="seoKeywordInput">Target Keyword</label>
+                <input type="text" id="seoKeywordInput" placeholder="e.g., premium cotton fabric India" onkeydown="if(event.key==='Enter')generateSEOBrief()">
+              </div>
+              <button class="btn btn-primary btn-sm" onclick="generateSEOBrief()" style="height:45px; white-space:nowrap;">✨ Generate Brief</button>
+            </div>
+          </div>
+        </div>
+        <div id="seoBriefOutput"></div>
+        <div id="seoBriefHistory" style="margin-top:20px;"></div>
+      </section>
+
+      <!-- ═══ AI GAP ANALYSIS ═══ -->
+      <section id="page-gaps" class="page-section">
+        <div class="flex-between">
+          <div>
+            <h2 style="font-size:16px;">🔎 AI Gap Analysis</h2>
+            <p style="font-size:12px; color:var(--text-secondary); margin-top:2px;">Find every search your competitor wins and you don't.</p>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="scanForGaps()">🔍 Scan for New Gaps</button>
+        </div>
+        <div id="gapStats" class="stats-grid" style="margin-bottom:20px;"></div>
+        <div class="card">
+          <div class="card-body">
+            <div class="table-wrap gap-table-responsive" id="gapTable"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ PROMPT TRACKER ═══ -->
+      <section id="page-prompttracker" class="page-section">
+        <div class="flex-between">
+          <div>
+            <h2 style="font-size:16px;">🎯 Custom Prompt Tracking</h2>
+            <p style="font-size:12px; color:var(--text-secondary); margin-top:2px;">Track what AI tells your buyers.</p>
+          </div>
+          <div class="flex-gap">
+            <button class="btn btn-secondary btn-sm" onclick="suggestPrompts()">💡 Suggest Prompts</button>
+            <button class="btn btn-primary btn-sm" onclick="openModal('promptModal')">+ Track Prompt</button>
+          </div>
+        </div>
+        <div class="tabs" id="promptTabs">
+          <div class="tab active" onclick="filterPrompts('all')">All</div>
+          <div class="tab" onclick="filterPrompts('branded')">Branded</div>
+          <div class="tab" onclick="filterPrompts('competitor')">Competitor</div>
+          <div class="tab" onclick="filterPrompts('category')">Category</div>
+          <div class="tab" onclick="filterPrompts('product')">Product</div>
+        </div>
+        <div id="promptCards" style="display:flex; flex-direction:column; gap:16px;"></div>
+        <div id="promptSuggestions"></div>
+      </section>
+
+      <!-- ═══ LEADS DASHBOARD ═══ -->
+      <section id="page-leadsdash" class="page-section">
+        <div class="flex-between">
+          <div>
+            <h2 style="font-size:16px;">📊 Leads Dashboard</h2>
+            <p style="font-size:12px; color:var(--text-secondary); margin-top:2px;">Ask TradeUNO instead of rebuilding dashboards.</p>
+          </div>
+        </div>
+        <div id="leadsDashStats" class="stats-grid" style="margin-bottom:20px;"></div>
+        <div class="grid-2 mb-20">
+          <div class="card">
+            <div class="card-header"><h3>📡 Attribution Channels</h3></div>
+            <div class="card-body" id="channelBreakdown"></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3>🚨 Wasted Spend Detection</h3></div>
+            <div class="card-body" id="wastedSpendBox">
+              <p style="color:var(--text-muted);font-size:13px;">Analysing campaigns...</p>
+            </div>
+          </div>
+        </div>
+        <div class="card mb-20">
+          <div class="card-header"><h3>💬 Ask About Your Leads</h3></div>
+          <div class="card-body">
+            <div class="nl-query-wrap">
+              <input type="text" id="leadsQuestion" placeholder="e.g., How many hot leads came from Instagram this month?" onkeydown="if(event.key==='Enter')askLeadsQuestion()">
+              <button class="btn btn-primary btn-sm" onclick="askLeadsQuestion()">Ask</button>
+            </div>
+            <div id="leadsAnswer" style="margin-top:16px;"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ REPORTS ═══ -->
+      <section id="page-reports" class="page-section">
+        <div class="flex-between">
+          <h2 style="font-size:16px;">📋 Daily Reports</h2>
+          <button class="btn btn-primary btn-sm" onclick="generateReport()">Generate Today's Report</button>
+        </div>
+        <div class="card"><div class="card-body"><div class="table-wrap" id="reportsTable"></div></div></div>
+      </section>
+
+      <!-- ═══ TASKS ═══ -->
+      <section id="page-tasks" class="page-section">
+        <div class="flex-between">
+          <h2 style="font-size:16px;">Team Tasks & Scoring</h2>
+          <div class="flex-gap">
+            <button class="btn btn-primary btn-sm" onclick="openModal('taskModal')">+ New Task</button>
+          </div>
+        </div>
+        <div class="card"><div class="card-body"><div class="table-wrap" id="tasksTable"></div></div></div>
+      </section>
+
+      <!-- ═══ CONTENT STUDIO ═══ -->
+      <section id="page-content" class="page-section">
+        <!-- 1. Content Studio List View -->
+        <div id="contentStudioList">
+          <div class="flex-between">
+            <h2 style="font-size:16px;">Content Studio — Reel & Post Ideas</h2>
+            <button class="btn btn-primary btn-sm" onclick="openModal('contentModal')">✨ Generate Idea</button>
+          </div>
+          <div id="contentIdeas" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;"></div>
+          <div id="contentAIResult"></div>
+        </div>
+
+        <!-- 2. Content Studio Workspace View -->
+        <div id="contentStudioWorkspace" style="display:none;" class="workspace-wrapper">
+          <!-- Workspace Header -->
+          <div class="workspace-header" style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--glass-border); padding-bottom:16px; margin-bottom:20px;">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <button class="btn btn-secondary btn-sm" onclick="closeContentWorkspace()">← Back</button>
+              <h3 id="workspaceTitle" style="margin:0;">Develop Plan</h3>
+            </div>
+            <div class="flex-gap">
+              <button class="btn btn-secondary btn-sm" onclick="saveContentPlan('liked')">Save Draft</button>
+              <button class="btn btn-success btn-sm" onclick="saveContentPlan('done')">Mark as Completed</button>
+            </div>
+          </div>
+          
+          <!-- Workspace Split Pane Layout -->
+          <div class="workspace-layout">
+            <!-- Left Side: Main Editor Storyboard -->
+            <div class="workspace-main">
+              <!-- Caption Card -->
+              <div class="card mb-20">
+                <div class="card-header"><h3>📝 Post Copy Details</h3></div>
+                <div class="card-body">
+                  <div class="form-group" style="margin-bottom:0;">
+                    <label for="wpCaption">Caption / Primary Text</label>
+                    <textarea id="wpCaption" placeholder="Write your post caption..." style="min-height:80px;"></textarea>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Dynamic Planning Area (Script/Storyboard) -->
+              <div class="card">
+                <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+                  <h3>🎬 Script & Storyboard Planner</h3>
+                  <button class="btn btn-secondary btn-sm" id="wpBtnAddSlide" onclick="addNewSlideRow()" style="display:none;">+ Add Slide</button>
+                </div>
+                <div class="card-body">
+                  <!-- Video View -->
+                  <div id="wpVideoView" style="display:none;">
+                    <div class="form-group">
+                      <label for="wpVideoScript">Video Script / Dialogue</label>
+                      <textarea id="wpVideoScript" placeholder="Write the full video script scene by scene..." style="min-height:160px;"></textarea>
+                    </div>
+                    <div class="form-group" style="margin-bottom:0;">
+                      <label for="wpVideoOverlay">Overlay Text / Subtitles</label>
+                      <textarea id="wpVideoOverlay" placeholder="Specify overlay text instructions (e.g. [0:03 - Linen Drape])..." style="min-height:80px;"></textarea>
+                    </div>
+                  </div>
+                  
+                  <!-- Image/Carousel Storyboard View -->
+                  <div id="wpImageView" style="display:none;">
+                    <div id="wpSlidesList" style="display:flex; flex-direction:column; gap:12px;">
+                      <!-- Slide rows rendered dynamically by JS -->
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Right Side: Sidebar Widgets -->
+            <div class="workspace-sidebar">
+              <!-- Widget 1: Categorization -->
+              <div class="widget-card">
+                <div class="widget-header">Format & Platform</div>
+                <div class="widget-body">
+                  <div class="form-group">
+                    <label>Content Type</label>
+                    <div style="display:flex; gap:16px; margin-top:4px;">
+                      <label style="display:flex; align-items:center; gap:6px; font-weight:normal; cursor:pointer;">
+                        <input type="radio" name="wpContentType" value="image" checked onclick="toggleCategoryUI('image')"> Image
+                      </label>
+                      <label style="display:flex; align-items:center; gap:6px; font-weight:normal; cursor:pointer;">
+                        <input type="radio" name="wpContentType" value="video" onclick="toggleCategoryUI('video')"> Video
+                      </label>
+                    </div>
+                  </div>
+                  
+                  <!-- Image Sub-type -->
+                  <div id="wpImageSubtypeWrap" class="form-group" style="margin-bottom:0;">
+                    <label>Image Type</label>
+                    <div style="display:flex; gap:16px; margin-top:4px;">
+                      <label style="display:flex; align-items:center; gap:6px; font-weight:normal; cursor:pointer;">
+                        <input type="radio" name="wpImageSubtype" value="single_post" checked onclick="updateAnalyticsDashboard()"> Single Post
+                      </label>
+                      <label style="display:flex; align-items:center; gap:6px; font-weight:normal; cursor:pointer;">
+                        <input type="radio" name="wpImageSubtype" value="carousel" onclick="updateAnalyticsDashboard()"> Carousel
+                      </label>
+                    </div>
+                  </div>
+                  
+                  <!-- Video Platforms Checklist -->
+                  <div id="wpVideoPlatformsWrap" class="form-group" style="display:none; margin-bottom:0;">
+                    <label>Video Platforms Suit</label>
+                    <div style="display:flex; flex-direction:column; gap:8px; margin-top:4px;">
+                      <label style="display:flex; align-items:center; gap:6px; font-weight:normal; cursor:pointer;">
+                        <input type="checkbox" class="wpVideoPlatform" value="reels" checked onclick="updateAnalyticsDashboard()"> Instagram Reels
+                      </label>
+                      <label style="display:flex; align-items:center; gap:6px; font-weight:normal; cursor:pointer;">
+                        <input type="checkbox" class="wpVideoPlatform" value="shorts" onclick="updateAnalyticsDashboard()"> YouTube Shorts
+                      </label>
+                      <label style="display:flex; align-items:center; gap:6px; font-weight:normal; cursor:pointer;">
+                        <input type="checkbox" class="wpVideoPlatform" value="youtube" onclick="updateAnalyticsDashboard()"> YouTube Longform
+                      </label>
+                      <label style="display:flex; align-items:center; gap:6px; font-weight:normal; cursor:pointer;">
+                        <input type="checkbox" class="wpVideoPlatform" value="linkedin" onclick="updateAnalyticsDashboard()"> LinkedIn Video
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Widget 2: AI Planner Assistant -->
+              <div class="widget-card">
+                <div class="widget-header">AI Content Co-Pilot</div>
+                <div class="widget-body">
+                  <p style="font-size:11px; color:var(--text-secondary); margin-bottom:12px; line-height:1.4;">Auto-generate structured scripts, slide copy, and predicted metrics based on your category choices.</p>
+                  <button class="btn btn-primary btn-sm btn-full" id="btnWpAiGenerate" onclick="generateWpAIPlan()">✨ Generate Plan with AI</button>
+                </div>
+              </div>
+              
+              <!-- Widget 3: Predictive Analytics Dashboard -->
+              <div class="widget-card" style="margin-bottom:0;">
+                <div class="widget-header">AI Performance Prediction</div>
+                <div class="widget-body">
+                  <!-- Radial Progress Score -->
+                  <div style="display:flex; justify-content:center; align-items:center; margin-bottom:12px; position:relative;">
+                    <svg width="72" height="72" viewBox="0 0 36 36" style="transform: rotate(-90deg);">
+                      <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="3"/>
+                      <path id="wpAnalyticsScoreCircle" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="var(--accent)" stroke-width="3" stroke-dasharray="0, 100"/>
+                    </svg>
+                    <div id="wpAnalyticsScoreText" style="position:absolute; font-size:14px; font-weight:800; color:var(--text-primary);">0%</div>
+                  </div>
+                  <div style="text-align:center; font-size:10px; color:var(--accent); font-weight:600; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:16px;">Engagement Score</div>
+                  
+                  <!-- Metrics Grid -->
+                  <div class="analytics-metrics-grid">
+                    <div class="metric-item">
+                      <div class="metric-label">❤️ Likes</div>
+                      <div class="metric-val" id="wpValLikes">0</div>
+                    </div>
+                    <div class="metric-item">
+                      <div class="metric-label">💬 Comments</div>
+                      <div class="metric-val" id="wpValComments">0</div>
+                    </div>
+                    <div class="metric-item">
+                      <div class="metric-label">🔗 Shares</div>
+                      <div class="metric-val" id="wpValShares">0</div>
+                    </div>
+                    <div class="metric-item">
+                      <div class="metric-label">🔄 Reshares</div>
+                      <div class="metric-val" id="wpValReshares">0</div>
+                    </div>
+                    <div class="metric-item">
+                      <div class="metric-label">🔖 Saves</div>
+                      <div class="metric-val" id="wpValSaves">0</div>
+                    </div>
+                    <div class="metric-item">
+                      <div class="metric-label">⏱️ Watch Time</div>
+                      <div class="metric-val" id="wpValWatchTime">-</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ SOCIAL MEDIA ═══ -->
+      <section id="page-social" class="page-section">
+        <div class="tabs" id="socialTabs">
+          <div class="tab active" data-tab="posts" onclick="switchSocialTab('posts')">📤 Posts</div>
+          <div class="tab" data-tab="accounts" onclick="switchSocialTab('accounts')">🔗 Accounts</div>
+        </div>
+        <div id="socialPostsTab">
+          <div class="flex-between">
+            <h2 style="font-size:16px;">Upload & Schedule Posts</h2>
+            <button class="btn btn-primary btn-sm" onclick="openModal('postModal')">+ New Post</button>
+          </div>
+          <div class="card"><div class="card-body"><div class="table-wrap" id="postsTable"></div></div></div>
+        </div>
+        <div id="socialAccountsTab" style="display:none;">
+          <div class="flex-between">
+            <h2 style="font-size:16px;">Connected Social Accounts</h2>
+            <button class="btn btn-primary btn-sm" onclick="openModal('accountModal')">+ Connect</button>
+          </div>
+          <div id="accountsList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;"></div>
+        </div>
+      </section>
+
+      <!-- ═══ BLOGS ═══ -->
+      <section id="page-blogs" class="page-section">
+        <div class="flex-between">
+          <h2 style="font-size:16px;">Blog Engine</h2>
+          <div class="flex-gap">
+            <button class="btn btn-secondary btn-sm" onclick="openModal('blogGenModal')">✨ AI Generate</button>
+            <button class="btn btn-primary btn-sm" onclick="openModal('blogModal')">+ Write Blog</button>
+          </div>
+        </div>
+        <div class="card"><div class="card-body"><div class="table-wrap" id="blogsTable"></div></div></div>
+        <div id="blogAIResult"></div>
+      </section>
+
+      <!-- ═══ VIDEOS ═══ -->
+      <section id="page-videos" class="page-section">
+        <div class="flex-between">
+          <h2 style="font-size:16px;">Video Lab — Editing Suggestions</h2>
+          <button class="btn btn-primary btn-sm" onclick="openModal('videoModal')">+ Add Video</button>
+        </div>
+        <div class="card"><div class="card-body"><div class="table-wrap" id="videosTable"></div></div></div>
+      </section>
+
+      <!-- ═══ COMPETITORS ═══ -->
+      <section id="page-competitors" class="page-section">
+        <div class="flex-between">
+          <h2 style="font-size:16px;">Competitor Intelligence</h2>
+          <button class="btn btn-primary btn-sm" onclick="openModal('compModal')">+ Add Competitor</button>
+        </div>
+        <div id="compGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px;"></div>
+      </section>
+
+      <!-- ═══ LEADS ═══ -->
+      <section id="page-leads" class="page-section">
+        <div class="flex-between">
+          <h2 style="font-size:16px;">Lead Finder — B2B & B2C</h2>
+          <div class="flex-gap">
+            <button class="btn btn-secondary btn-sm" onclick="generateLeads()">🤖 AI Generate Leads</button>
+            <button class="btn btn-primary btn-sm" onclick="openModal('leadModal')">+ Add Lead</button>
+          </div>
+        </div>
+        <div class="tabs">
+          <div class="tab active" onclick="filterLeads('all')">All</div>
+          <div class="tab" onclick="filterLeads('b2b')">B2B</div>
+          <div class="tab" onclick="filterLeads('b2c')">B2C</div>
+          <div class="tab" onclick="filterLeads('store')">Store Visits</div>
+        </div>
+        <div class="card"><div class="card-body"><div class="table-wrap" id="leadsTable"></div></div></div>
+        <div id="leadAIResult"></div>
+      </section>
+
+      <!-- ═══ META ADS ═══ -->
+      <section id="page-meta" class="page-section">
+        <div class="flex-between">
+          <h2 style="font-size:16px;">Meta Ads Analysis</h2>
+          <div class="flex-gap">
+            <button class="btn btn-secondary btn-sm" onclick="syncMeta()">🔄 Fetch Real Meta Data</button>
+            <button class="btn btn-secondary btn-sm" onclick="analyzeMeta()">🤖 AI Analyze</button>
+            <button class="btn btn-primary btn-sm" onclick="openModal('campaignModal')">+ Add Campaign</button>
+          </div>
+        </div>
+        <div class="card"><div class="card-body"><div class="table-wrap" id="metaTable"></div></div></div>
+        <div id="metaAIResult"></div>
+      </section>
+
+      <!-- ═══ SHOPIFY ═══ -->
+      <section id="page-shopify" class="page-section">
+        <div class="flex-between">
+          <h2 style="font-size:16px;">Shopify Pulse — Orders & Products</h2>
+          <div class="flex-gap">
+            <button class="btn btn-secondary btn-sm" onclick="syncShopify()">🔄 Fetch Real Store Data</button>
+            <button class="btn btn-primary btn-sm" onclick="analyzeShopify()">🤖 AI Insights</button>
+          </div>
+        </div>
+        
+        <div id="shopifyStats" class="stats-grid" style="margin-bottom: 20px;"></div>
+        
+        <div class="card mb-20">
+          <div class="card-header"><h3>📦 Synced Orders</h3></div>
+          <div class="card-body">
+            <div class="table-wrap" id="shopifyOrdersTable">
+              <div class="empty-state">
+                <div class="empty-icon">🛒</div>
+                <h4>No Shopify orders synced yet</h4>
+                <p>Click "Fetch Real Store Data" or view sample data.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="shopifyInsights" class="card" style="margin-bottom:20px;">
+          <div class="card-header"><h3>🤖 AI E-Commerce Insights</h3></div>
+          <div class="card-body">
+            <p style="color:var(--text-muted);font-size:13px;">Click "AI Insights" to get AI-driven analysis of your Shopify store performance.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ CITATION SCORE ═══ -->
+      <section id="page-citation" class="page-section">
+        <div class="flex-between">
+          <h2 style="font-size:16px;">AI Citation Score Tracker</h2>
+          <button class="btn btn-secondary btn-sm" onclick="refreshCitationScore()">🔄 Refresh Citation Score</button>
+        </div>
+        
+        <div class="citation-hero">
+          <div class="citation-gauge">
+            <svg width="140" height="140" viewBox="0 0 140 140">
+              <circle class="gauge-track" cx="70" cy="70" r="58"></circle>
+              <circle id="citationGaugeFill" class="gauge-fill" cx="70" cy="70" r="58" stroke-dasharray="0 364.4"></circle>
+            </svg>
+            <div class="gauge-text">
+              <div id="citationScoreNum" class="gauge-score">0</div>
+              <div class="gauge-label">Score</div>
+            </div>
+          </div>
+          <div style="flex:1;">
+            <h3 style="font-size:18px; font-weight:700;">Brand Visibility in GenAI Search</h3>
+            <p style="font-size:13px; color:var(--text-secondary); margin-top:6px; line-height:1.5;">This score tracks how frequently TradeUno Fabrics is cited as a recommended brand across popular AI engines like ChatGPT, Gemini, Claude, and Perplexity when buyers ask fabric-related questions.</p>
+            <div id="citationTrendChange" class="citation-trend-change"></div>
+          </div>
+          <div>
+            <div style="font-size:11px; text-transform:uppercase; color:var(--text-muted); font-weight:700; margin-bottom:8px; letter-spacing:0.5px;">Weekly Trend</div>
+            <div id="citationTrendChart" class="citation-trend"></div>
+          </div>
+        </div>
+
+        <div class="grid-2 mb-20" style="grid-template-columns: 1fr 1fr; gap: 20px;">
+          <div class="card">
+            <div class="card-header"><h3>🤖 Engine-Specific Citation Scores</h3></div>
+            <div class="card-body">
+              <div id="citationPlatformGrid" class="platform-grid"></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3>📋 Actionable Visibility Gaps</h3></div>
+            <div class="card-body" style="padding:15px; max-height: 400px; overflow-y:auto; display:flex; flex-direction:column; gap:10px;" id="citationTasksList"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ CONTENT ENGINE (SEO BRIEFS) ═══ -->
+      <section id="page-contentengine" class="page-section">
+        <div class="grid-2 mb-20" style="grid-template-columns: 1fr 340px; gap: 20px;">
+          <div>
+            <div class="card mb-20">
+              <div class="card-header"><h3>✍️ Generate AI SEO Content Brief</h3></div>
+              <div class="card-body">
+                <p style="font-size:13px; color:var(--text-secondary); margin-bottom:16px;">Input a target buyer keyword to auto-generate title variations, meta descriptions, semantic/LSI keywords, competitor gaps, and a full article heading structure.</p>
+                <div style="display:flex; gap:10px;">
+                  <input type="text" id="seoKeywordInput" aria-label="Enter target keyword" placeholder="e.g. premium linen shirts wholesalers india" style="flex:1; padding:10px 14px; background:var(--glass); border:1px solid var(--glass-border); border-radius:var(--radius-sm); color:var(--text-primary); font-size:13px;">
+                  <button class="btn btn-primary btn-sm" onclick="generateSEOBrief()">Generate Brief</button>
+                </div>
+              </div>
+            </div>
+            
+            <div id="seoBriefOutput">
+              <div class="empty-state">
+                <div class="empty-icon">✍️</div>
+                <h4>No Brief Generated Yet</h4>
+                <p>Enter a target keyword above to build a comprehensive SEO brief.</p>
+              </div>
+            </div>
+          </div>
+          
+          <div id="seoBriefHistory"></div>
+        </div>
+      </section>
+
+      <!-- ═══ GAP ANALYSIS ═══ -->
+      <section id="page-gaps" class="page-section">
+        <div class="flex-between">
+          <h2 style="font-size:16px;">AI Search Gap Analysis</h2>
+          <button class="btn btn-secondary btn-sm" onclick="scanForGaps()">🔎 Scan for New Gaps</button>
+        </div>
+        
+        <div id="gapStats" class="stats-grid" style="margin-bottom: 20px;"></div>
+        
+        <div class="card">
+          <div class="card-body">
+            <div class="table-wrap" id="gapTable"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ PROMPT TRACKER ═══ -->
+      <section id="page-prompttracker" class="page-section">
+        <div class="flex-between">
+          <h2 style="font-size:16px;">AI Prompt Tracker</h2>
+          <div class="flex-gap">
+            <button class="btn btn-secondary btn-sm" onclick="suggestPrompts()">💡 Prompt Suggestions</button>
+            <button class="btn btn-primary btn-sm" onclick="openModal('promptModal')">+ Track New Prompt</button>
+          </div>
+        </div>
+        
+        <!-- Suggestions area -->
+        <div id="promptSuggestions" class="mb-20"></div>
+
+        <!-- Tabs for prompt types -->
+        <div class="tabs" id="promptTabs">
+          <div class="tab active" onclick="filterPrompts('all')">All</div>
+          <div class="tab" onclick="filterPrompts('branded')">Branded</div>
+          <div class="tab" onclick="filterPrompts('competitor')">Competitor</div>
+          <div class="tab" onclick="filterPrompts('category')">Category</div>
+          <div class="tab" onclick="filterPrompts('product')">Product</div>
+        </div>
+
+        <div id="promptCards" style="display:flex; flex-direction:column; gap:16px;">
+          <!-- Tracked prompts card list will render here -->
+        </div>
+      </section>
+
+      <!-- ═══ LEADS DASHBOARD ═══ -->
+      <section id="page-leadsdash" class="page-section">
+        <div id="leadsDashStats" class="stats-grid" style="margin-bottom: 20px;"></div>
+        
+        <div class="grid-2 mb-20" style="grid-template-columns: 1fr 1fr; gap: 20px;">
+          <div class="card">
+            <div class="card-header"><h3>📊 Lead Attribution By Channel</h3></div>
+            <div class="card-body">
+              <div id="channelBreakdown" style="display:flex; flex-direction:column; gap:12px;"></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3>⚠️ Wasted Ad Spend Alerts</h3></div>
+            <div class="card-body" id="wastedSpendBox"></div>
+          </div>
+        </div>
+
+        <!-- Leads AI Copilot Q&A -->
+        <div class="card">
+          <div class="card-header"><h3>🤖 Leads Intelligence Copilot</h3></div>
+          <div class="card-body">
+            <p style="font-size:12px; color:var(--text-secondary); margin-bottom:12px;">Ask natural language questions about your lead acquisition and Meta ad campaigns.</p>
+            <div style="display:flex; gap:10px; margin-bottom:15px;">
+              <input type="text" id="leadsQuestion" aria-label="Ask Leads Copilot" placeholder="e.g. Which landing pages are generating the highest quality B2B leads?" style="flex:1; padding:10px 14px; background:var(--glass); border:1px solid var(--glass-border); border-radius:var(--radius-sm); color:var(--text-primary); font-size:13px;" onkeydown="if(event.key==='Enter')askLeadsQuestion()">
+              <div class="btn btn-primary btn-sm" onclick="askLeadsQuestion()">Ask Copilot</div>
+            </div>
+            <div id="leadsAnswer" style="display:none; padding:15px; border-radius:var(--radius-sm); background:var(--glass); border:1px solid var(--glass-border); font-size:13px; line-height:1.6; white-space:pre-wrap;"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ REPORTS ═══ -->
+      <section id="page-reports" class="page-section">
+        <div class="flex-between">
+          <h2 style="font-size:16px;">Daily Marketing Reports</h2>
+          <button class="btn btn-primary btn-sm" onclick="generateReport()">📊 Generate Today's Report</button>
+        </div>
+        <div id="reportsList"></div>
+      </section>
+
+      <!-- ═══ AI ASSISTANT ═══ -->
+      <section id="page-ai" class="page-section">
+        <h2 style="font-size:16px;margin-bottom:16px;">🤖 AI Marketing Assistant</h2>
+        <p style="font-size:13px;color:var(--text-secondary);margin-bottom:20px;">Ask anything about marketing strategy, content ideas, ad optimization, or team productivity.</p>
+        <div class="ai-panel">
+          <div class="ai-messages" id="aiMessages">
+            <div class="ai-msg assistant">Hi! I'm your AI CMO assistant for TradeUno Fabrics. I can help with:
+
+• 📊 Marketing strategy & planning
+• 🎬 Content & reel ideas
+• 🔍 Competitor analysis
+• 📈 Ad optimization
+• 🎯 Lead generation
+• ✍️ Blog writing
+• 🎥 Video editing tips
+
+What would you like help with today?</div>
+          </div>
+          <div class="ai-input-wrap">
+            <input type="text" id="aiInput" aria-label="Ask your AI CMO anything" placeholder="Ask your AI CMO anything..." onkeydown="if(event.key==='Enter')sendAIMessage()">
+            <button class="btn btn-primary btn-sm" onclick="sendAIMessage()">Send</button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<!-- ═══ MODALS ═══ -->
+<!-- Task Modal -->
+<div class="modal-overlay" id="taskModal">
+  <div class="modal">
+    <div class="modal-header"><h3>Create New Task</h3><button class="modal-close" onclick="closeModal('taskModal')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label for="taskTitle">Title</label><input type="text" id="taskTitle" placeholder="Task title"></div>
+      <div class="form-group"><label for="taskDesc">Description</label><textarea id="taskDesc" placeholder="Describe the task..."></textarea></div>
+      <div class="form-group"><label for="taskAssignee">Assign To</label><select id="taskAssignee"></select></div>
+      <div class="form-group"><label for="taskPriority">Priority</label><select id="taskPriority"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option></select></div>
+      <div class="form-group"><label for="taskDue">Due Date</label><input type="date" id="taskDue"></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary btn-sm" onclick="closeModal('taskModal')">Cancel</button><button class="btn btn-primary btn-sm" onclick="createTask()">Create Task</button></div>
+  </div>
+</div>
+
+<!-- Content Modal -->
+<div class="modal-overlay" id="contentModal">
+  <div class="modal">
+    <div class="modal-header"><h3>✨ Generate Content Idea</h3><button class="modal-close" onclick="closeModal('contentModal')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label for="contentType">Content Type</label><select id="contentType"><option value="reel">Reel</option><option value="post">Post</option><option value="story">Story</option><option value="carousel">Carousel</option></select></div>
+      <div class="form-group"><label for="contentTopic">Topic / Theme</label><input type="text" id="contentTopic" placeholder="e.g., Summer collection, Behind the scenes..."></div>
+      <div class="form-group"><label for="contentPlatform">Platform</label><select id="contentPlatform"><option value="instagram">Instagram</option><option value="facebook">Facebook</option><option value="youtube">YouTube</option></select></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary btn-sm" onclick="closeModal('contentModal')">Cancel</button><button class="btn btn-primary btn-sm" onclick="generateContent()">✨ Generate</button></div>
+  </div>
+</div>
+
+<!-- Post Modal -->
+<div class="modal-overlay" id="postModal">
+  <div class="modal">
+    <div class="modal-header"><h3>Upload Social Post</h3><button class="modal-close" onclick="closeModal('postModal')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label for="postPlatform">Platform</label><select id="postPlatform"><option value="instagram">Instagram</option><option value="facebook">Facebook</option><option value="twitter">Twitter</option><option value="linkedin">LinkedIn</option></select></div>
+      <div class="form-group"><label for="postContent">Content / Caption</label><textarea id="postContent" placeholder="Write your post caption..."></textarea></div>
+      <div class="form-group"><label for="postMedia">Media File</label><input type="file" id="postMedia" accept="image/*,video/*"></div>
+      <div class="form-group"><label for="postSchedule">Schedule (optional)</label><input type="datetime-local" id="postSchedule"></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary btn-sm" onclick="closeModal('postModal')">Cancel</button><button class="btn btn-primary btn-sm" onclick="createPost()">Upload Post</button></div>
+  </div>
+</div>
+
+<!-- Account Modal -->
+<div class="modal-overlay" id="accountModal">
+  <div class="modal">
+    <div class="modal-header"><h3>Connect Social Account</h3><button class="modal-close" onclick="closeModal('accountModal')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label for="accPlatform">Platform</label><select id="accPlatform"><option value="instagram">Instagram</option><option value="facebook">Facebook</option><option value="twitter">Twitter/X</option><option value="linkedin">LinkedIn</option><option value="youtube">YouTube</option></select></div>
+      <div class="form-group"><label for="accName">Account Name</label><input type="text" id="accName" placeholder="@tradeuno_fabrics"></div>
+      <div class="form-group"><label for="accToken">Access Token (optional)</label><input type="text" id="accToken" placeholder="API access token"></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary btn-sm" onclick="closeModal('accountModal')">Cancel</button><button class="btn btn-primary btn-sm" onclick="connectAccount()">Connect</button></div>
+  </div>
+</div>
+
+<!-- Competitor Modal -->
+<div class="modal-overlay" id="compModal">
+  <div class="modal">
+    <div class="modal-header"><h3>Add Competitor</h3><button class="modal-close" onclick="closeModal('compModal')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label for="compName">Name</label><input type="text" id="compName" placeholder="Competitor name"></div>
+      <div class="form-group"><label for="compWebsite">Website</label><input type="url" id="compWebsite" placeholder="https://..."></div>
+      <div class="form-group"><label for="compInsta">Instagram</label><input type="text" id="compInsta" placeholder="@handle"></div>
+      <div class="form-group"><label for="compCategory">Category</label><select id="compCategory"><option value="Direct">Direct</option><option value="Indirect">Indirect</option></select></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary btn-sm" onclick="closeModal('compModal')">Cancel</button><button class="btn btn-primary btn-sm" onclick="addCompetitor()">Add</button></div>
+  </div>
+</div>
+
+<!-- Lead Modal -->
+<div class="modal-overlay" id="leadModal">
+  <div class="modal">
+    <div class="modal-header"><h3>Add New Lead</h3><button class="modal-close" onclick="closeModal('leadModal')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label for="leadName">Name</label><input type="text" id="leadName" placeholder="Lead name"></div>
+      <div class="form-group"><label for="leadEmail">Email</label><input type="email" id="leadEmail" placeholder="email@example.com"></div>
+      <div class="form-group"><label for="leadPhone">Phone</label><input type="tel" id="leadPhone" placeholder="+91..."></div>
+      <div class="form-group"><label for="leadCompany">Company</label><input type="text" id="leadCompany" placeholder="Company name (B2B)"></div>
+      <div class="form-group"><label for="leadType">Type</label><select id="leadType"><option value="b2b">B2B</option><option value="b2c">B2C</option></select></div>
+      <div class="form-group"><label for="leadSource">Source</label><select id="leadSource"><option value="Website">Website</option><option value="Instagram">Instagram</option><option value="Store Visit">Store Visit</option><option value="Referral">Referral</option><option value="Cold Outreach">Cold Outreach</option></select></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary btn-sm" onclick="closeModal('leadModal')">Cancel</button><button class="btn btn-primary btn-sm" onclick="addLead()">Add Lead</button></div>
+  </div>
+</div>
+
+<!-- Blog Modal -->
+<div class="modal-overlay" id="blogModal">
+  <div class="modal">
+    <div class="modal-header"><h3>Write Blog Post</h3><button class="modal-close" onclick="closeModal('blogModal')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label for="blogTitle">Title</label><input type="text" id="blogTitle" placeholder="Blog title"></div>
+      <div class="form-group"><label for="blogContent">Content</label><textarea id="blogContent" placeholder="Write your blog..." style="min-height:200px;"></textarea></div>
+      <div class="form-group"><label for="blogMeta">Meta Description</label><input type="text" id="blogMeta" placeholder="SEO meta description"></div>
+      <div class="form-group"><label for="blogKeywords">Keywords</label><input type="text" id="blogKeywords" placeholder="keyword1, keyword2..."></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary btn-sm" onclick="closeModal('blogModal')">Cancel</button><button class="btn btn-primary btn-sm" onclick="createBlog()">Publish</button></div>
+  </div>
+</div>
+
+<!-- Blog Generate Modal -->
+<div class="modal-overlay" id="blogGenModal">
+  <div class="modal">
+    <div class="modal-header"><h3>✨ AI Blog Generator</h3><button class="modal-close" onclick="closeModal('blogGenModal')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label for="blogGenTopic">Blog Topic</label><input type="text" id="blogGenTopic" placeholder="e.g., Benefits of organic cotton..."></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary btn-sm" onclick="closeModal('blogGenModal')">Cancel</button><button class="btn btn-primary btn-sm" onclick="generateBlog()">✨ Generate</button></div>
+  </div>
+</div>
+
+<!-- Video Modal -->
+<div class="modal-overlay" id="videoModal">
+  <div class="modal">
+    <div class="modal-header"><h3>Add Video Project</h3><button class="modal-close" onclick="closeModal('videoModal')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label for="videoTitle">Title</label><input type="text" id="videoTitle" placeholder="Video title"></div>
+      <div class="form-group"><label for="videoDesc">Description</label><textarea id="videoDesc" placeholder="Describe the video..."></textarea></div>
+      <div class="form-group"><label for="videoFile">Video File (optional)</label><input type="file" id="videoFile" accept="video/*"></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary btn-sm" onclick="closeModal('videoModal')">Cancel</button><button class="btn btn-primary btn-sm" onclick="addVideo()">Add Video</button></div>
+  </div>
+</div>
+
+<!-- Campaign Modal -->
+<div class="modal-overlay" id="campaignModal">
+  <div class="modal">
+    <div class="modal-header"><h3>Add Campaign Data</h3><button class="modal-close" onclick="closeModal('campaignModal')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label for="campName">Campaign Name</label><input type="text" id="campName" placeholder="Campaign name"></div>
+      <div class="grid-2">
+        <div class="form-group"><label for="campBudget">Budget (₹)</label><input type="number" id="campBudget" placeholder="50000"></div>
+        <div class="form-group"><label for="campSpent">Spent (₹)</label><input type="number" id="campSpent" placeholder="32000"></div>
+        <div class="form-group"><label for="campImpressions">Impressions</label><input type="number" id="campImpressions" placeholder="145000"></div>
+        <div class="form-group"><label for="campClicks">Clicks</label><input type="number" id="campClicks" placeholder="3200"></div>
+        <div class="form-group"><label for="campConversions">Conversions</label><input type="number" id="campConversions" placeholder="89"></div>
+        <div class="form-group"><label for="campDate">Date</label><input type="date" id="campDate"></div>
+      </div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary btn-sm" onclick="closeModal('campaignModal')">Cancel</button><button class="btn btn-primary btn-sm" onclick="addCampaign()">Add Campaign</button></div>
+  </div>
+</div>
+
+<!-- AI Score Modal -->
+<div class="modal-overlay" id="scoreModal">
+  <div class="modal">
+    <div class="modal-header"><h3>🤖 AI Task Review</h3><button class="modal-close" onclick="closeModal('scoreModal')">✕</button></div>
+    <div class="modal-body" id="scoreResult">
+      <div style="text-align:center;padding:30px;"><div class="spinner"></div><p style="margin-top:12px;color:var(--text-muted);font-size:13px;">AI is analyzing this task...</p></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary btn-sm" onclick="closeModal('scoreModal')">Close</button></div>
+  </div>
+</div>
+
+<!-- AI Result Modal -->
+<div class="modal-overlay" id="aiResultModal">
+  <div class="modal">
+    <div class="modal-header"><h3 id="aiResultTitle">🤖 AI Insights</h3><button class="modal-close" onclick="closeModal('aiResultModal')">✕</button></div>
+    <div class="modal-body" id="aiResultContent">
+      <div style="text-align:center;padding:30px;"><div class="spinner"></div><p style="margin-top:12px;color:var(--text-muted);font-size:13px;">AI is processing...</p></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary btn-sm" onclick="closeModal('aiResultModal')">Close</button></div>
+  </div>
+</div>
+
+<!-- Edit Lead Modal -->
+<div class="modal-overlay" id="editLeadModal">
+  <div class="modal">
+    <div class="modal-header"><h3>Update Lead</h3><button class="modal-close" onclick="closeModal('editLeadModal')">✕</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="editLeadId">
+      <div class="form-group">
+        <label for="editLeadStatus">Status</label>
+        <select id="editLeadStatus">
+          <option value="new">New</option>
+          <option value="contacted">Contacted</option>
+          <option value="qualified">Qualified</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="editLeadNotes">Notes</label>
+        <textarea id="editLeadNotes" placeholder="Add notes about conversations, requirements..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary btn-sm" onclick="closeModal('editLeadModal')">Cancel</button><button class="btn btn-primary btn-sm" onclick="updateLead()">Save Changes</button></div>
+  </div>
+</div>
+
+<!-- Prompt Tracking Modal -->
+<div class="modal-overlay" id="promptModal">
+  <div class="modal">
+    <div class="modal-header"><h3>🎯 Track New Prompt</h3><button class="modal-close" onclick="closeModal('promptModal')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label for="promptText">Prompt / Question</label><textarea id="promptText" placeholder="e.g., What are the best premium fabric brands in India?" style="min-height:80px;"></textarea></div>
+      <div class="form-group"><label for="promptType">Prompt Type</label><select id="promptType"><option value="branded">Branded</option><option value="competitor">Competitor</option><option value="category">Category</option><option value="product">Product</option></select></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary btn-sm" onclick="closeModal('promptModal')">Cancel</button><button class="btn btn-primary btn-sm" onclick="addPrompt()">Track Prompt</button></div>
+  </div>
+</div>
+
+<script src="/app.js"></script>
+</body>
+</html>
